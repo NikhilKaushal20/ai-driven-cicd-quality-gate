@@ -1,0 +1,15 @@
+# Maven
+target/
+
+# Logs
+*.log
+
+# Python
+__pycache__/
+
+# IDE
+.vscode/
+.idea/
+
+# Environment
+.env
