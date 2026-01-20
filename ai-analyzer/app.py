@@ -6,11 +6,10 @@ from pydantic import BaseModel
 
 app = FastAPI()
 
-# Template + static setup
 templates = Jinja2Templates(directory="templates")
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-# In-memory dashboard state
+# In-memory state for dashboard display
 LAST_RESULT = {
     "status": "UNSTABLE",
     "failure_type": "TEST_FAILURE",
@@ -37,6 +36,7 @@ def dashboard(request: Request):
 def analyze_failure(data: FailureLog):
     log = data.log
 
+    # ✅ Simple AI logic (rule-based) — replace with OpenAI later if needed
     if "AssertionError" in log:
         LAST_RESULT["status"] = "UNSTABLE"
         LAST_RESULT["failure_type"] = "TEST_FAILURE"
@@ -44,7 +44,7 @@ def analyze_failure(data: FailureLog):
     elif "Timeout" in log or "Connection refused" in log:
         LAST_RESULT["status"] = "FAILURE"
         LAST_RESULT["failure_type"] = "ENVIRONMENT_ISSUE"
-        LAST_RESULT["recommendation"] = "Check infrastructure/browser/driver/network"
+        LAST_RESULT["recommendation"] = "Check network/browser/driver/infra"
     else:
         LAST_RESULT["status"] = "FAILURE"
         LAST_RESULT["failure_type"] = "APPLICATION_BUG"
