@@ -1,0 +1,5 @@
+body { font-family: Arial, sans-serif; background: #f4f6f8; }
+.container { width: 60%; margin: 50px auto; background: white; padding: 20px; border-radius: 8px; }
+.SUCCESS { color: green; font-weight: bold; }
+.UNSTABLE { color: orange; font-weight: bold; }
+.FAILURE { color: red; font-weight: bold; }
