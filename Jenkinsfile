@@ -42,14 +42,20 @@ pipeline {
                             exit 0
                         }
 
-                        $log = Get-Content $xmlFile.FullName -Raw
-                        $body = @{ log = $log } | ConvertTo-Json -Depth 5
+                        # Force XML content to pure string
+                        $log = [string](Get-Content $xmlFile.FullName -Raw)
+
+                        # Escape quotes to build valid JSON
+                        $escapedLog = $log -replace '"', '\\"'
+
+                        # Manually build JSON payload
+                        $json = "{""log"":""$escapedLog""}"
 
                         $response = Invoke-RestMethod `
-                          -Uri "http://127.0.0.1:8001/analyze" `
-                          -Method POST `
-                          -Body $body `
-                          -ContentType "application/json"
+                            -Uri "http://127.0.0.1:8001/analyze" `
+                            -Method POST `
+                            -Body $json `
+                            -ContentType "application/json"
 
                         Write-Output $response.analysis.status
                         ''',
