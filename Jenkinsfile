@@ -21,65 +21,37 @@ pipeline {
             }
         }
 
-        stage('Verify Test Reports') {
-            steps {
-                bat '''
-                echo "Listing surefire reports:"
-                dir automation-tests\\target\\surefire-reports
-                '''
-            }
-        }
-
         stage('AI Failure Analysis') {
             steps {
                 script {
                     def aiStatus = powershell(
                         script: '''
-                        $xmlFile = Get-ChildItem "automation-tests/target/surefire-reports/*.xml" | Select-Object -First 1
+                        $xml = Get-ChildItem "automation-tests/target/surefire-reports/*.xml" | Select-Object -First 1
+                        if ($null -eq $xml) { "NO_REPORT"; exit 0 }
 
-                        if ($null -eq $xmlFile) {
-                            Write-Output "NO_REPORT"
-                            exit 0
-                        }
+                        $log = [string](Get-Content $xml.FullName -Raw)
+                        $json = @{ log = $log } | ConvertTo-Json -Compress
 
-                        # Force XML content to pure string
-                        $log = [string](Get-Content $xmlFile.FullName -Raw)
+                        $res = Invoke-RestMethod `
+                          -Uri "http://127.0.0.1:8001/analyze" `
+                          -Method POST `
+                          -Body $json `
+                          -ContentType "application/json"
 
-                        # Escape quotes to build valid JSON
-                        $escapedLog = $log -replace '"', '\\"'
-
-                        # Manually build JSON payload
-                        $json = "{""log"":""$escapedLog""}"
-
-                        $response = Invoke-RestMethod `
-                            -Uri "http://127.0.0.1:8001/analyze" `
-                            -Method POST `
-                            -Body $json `
-                            -ContentType "application/json"
-
-                        Write-Output $response.analysis.status
+                        $res.analysis.status
                         ''',
                         returnStdout: true
                     ).trim()
 
-                    echo "AI Quality Gate Status: ${aiStatus}"
+                    echo "AI Status: ${aiStatus}"
 
                     if (aiStatus == "FAILURE") {
-                        error("Quality gate blocked the pipeline")
+                        error("Pipeline blocked by AI quality gate")
                     } else if (aiStatus == "UNSTABLE") {
                         currentBuild.result = "UNSTABLE"
-                        echo "Build marked UNSTABLE"
-                    } else {
-                        echo "Build PASSED"
                     }
                 }
             }
-        }
-    }
-
-    post {
-        always {
-            archiveArtifacts artifacts: 'automation-tests/target/surefire-reports/**/*'
         }
     }
 }

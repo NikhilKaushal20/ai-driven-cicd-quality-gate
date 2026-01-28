@@ -13,3 +13,5 @@ __pycache__/
 
 # Environment
 .env
+ai-analyzer/venv/
+automation-tests/target/

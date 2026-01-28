@@ -1,8 +1,8 @@
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
 <suite name="Quality Gate Suite">
-    <test name="UI Smoke Tests">
+    <test name="UI Tests">
         <classes>
-            <class name="tests.LoginTest"/>
+            <class name="tests.SampleUITest"/>
         </classes>
     </test>
 </suite>

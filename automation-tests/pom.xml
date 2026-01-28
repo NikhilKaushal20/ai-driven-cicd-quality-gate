@@ -12,16 +12,14 @@
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <dependencies>
-
         <!-- Selenium -->
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
-            <version>4.15.0</version>
+            <version>4.18.1</version>
         </dependency>
 
         <!-- TestNG -->
@@ -31,27 +29,10 @@
             <version>7.9.0</version>
             <scope>test</scope>
         </dependency>
-
-        <!-- WebDriverManager -->
-        <dependency>
-            <groupId>io.github.bonigarcia</groupId>
-            <artifactId>webdrivermanager</artifactId>
-            <version>5.6.3</version>
-        </dependency>
-
-        <!-- JSON for reports later -->
-        <dependency>
-            <groupId>org.json</groupId>
-            <artifactId>json</artifactId>
-            <version>20231013</version>
-        </dependency>
-
     </dependencies>
 
     <build>
         <plugins>
-
-            <!-- Maven Surefire -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -62,8 +43,6 @@
                     </suiteXmlFiles>
                 </configuration>
             </plugin>
-
         </plugins>
     </build>
-
 </project>
